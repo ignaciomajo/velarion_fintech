@@ -70,13 +70,6 @@ El dataset resultante para el entrenamiento de los modelos fue confexionado a pa
 | `EstimatedSalary`     | Numérica Continua   | Salario estimado del cliente                                   |
 
 
-  avg_amount_30d = client_tx[client_tx['date'] >= d30_back]['amount'].mean()
-  if pd.isna(avg_amount_30d): 
-      avg_amount_30d = 0
-  ratio_recent_vs_historical_transactions_amount = safe_ratio(avg_amount_30d, avg_txs_amount)
-  risk_factor = vulnerability_score * avg_inflation
-  inf_pressure = (1 - ratio_recent_vs_historical_transactions_amount) * risk_factor
-
 ### Features: Transacciones
 
 | Feature                       | Tipo               | Descripción                                                                                                              | 
