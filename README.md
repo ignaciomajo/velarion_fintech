@@ -162,3 +162,13 @@ El dataset resultante para el entrenamiento de los modelos fue confexionado a pa
 
 
 ## 8. Desarrolladores del proyecto 👷
+
+* **Samantha Estudillo**
+  - Rol: BI Analyst / Data Analyst
+* **Patricio Diaz**
+  - Rol: Data Analyst / Data Scientist
+* **Carlos Silva**
+  - Rol: ML Engineer
+* **Ignacio Majo**
+  - Rol: Data Engineer / ML Engineer
+    
