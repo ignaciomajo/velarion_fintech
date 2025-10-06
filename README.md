@@ -9,7 +9,7 @@
 1. Descripción del proyecto
 2. Acceso al proyecto
 3. Etapas del proyecto
-4. Descripción de los datos
+4. Data Catalog (Catálogo de datos)
 5. Resultados y conclusiones
 6. Tecnologías utilizadas
 7. Agradecimientos
@@ -48,8 +48,7 @@ Esto descargará un archivo comprimido `.zip`, que podrás alojar en el director
 <br><br><br><br><br>
 
 
-## 4. Descripción de los datos
-
+## 4. Data Catalog (Catálogo de datos)
 El dataset resultante para el entrenamiento de los modelos fue confexionado a partir de distintas fuentes:
 
 * <a href=https://www.kaggle.com/datasets/mathchi/churn-for-bank-customers>Dataset Churn</a>
