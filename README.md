@@ -20,7 +20,9 @@
 
 ## 1. Descripción del proyecto 📚
 
-<br><br><br><br><br>
+Este proyecto de Data Science se centra en la predicción de abandono de clientes (churn) para el sector Fintech. El objetivo principal es desarrollar un modelo predictivo que identifique a los clientes con alta probabilidad de dejar de usar los servicios, permitiendo así a los equipos de negocio implementar estrategias de retención proactivas y personalizadas.
+
+Para lograrlo, se utilizan datos de transacciones, interacciones con la aplicación y otros factores relevantes. El resultado final es un modelo de Machine Learning y un panel de control interactivo (dashboard) que ofrece una visión clara de los segmentos de riesgo y recomendaciones accionables para mejorar las tasas de retención. Este enfoque no solo busca mitigar la pérdida de ingresos, sino también optimizar los costos de retención al dirigir las campañas de forma más efectiva.
 
 
 ## 2. Acceso al proyecto 📂
