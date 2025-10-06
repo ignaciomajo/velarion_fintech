@@ -1,6 +1,6 @@
 # **Fintech - Customer Churn**
 
-<img width="720" height="720" alt="nano-banana-2025-10-06T15-03-15" src="https://github.com/user-attachments/assets/9622b396-bf2e-4f82-a06b-64d332cdf90b" />
+<img width="720" height="640" alt="nano-banana-2025-10-06T15-03-15" src="https://github.com/user-attachments/assets/9622b396-bf2e-4f82-a06b-64d332cdf90b" />
 
 ---
 
