@@ -70,6 +70,13 @@ El dataset resultante para el entrenamiento de los modelos fue confexionado a pa
 | `EstimatedSalary`     | Numérica Continua   | Salario estimado del cliente                                   |
 
 
+  avg_amount_30d = client_tx[client_tx['date'] >= d30_back]['amount'].mean()
+  if pd.isna(avg_amount_30d): 
+      avg_amount_30d = 0
+  ratio_recent_vs_historical_transactions_amount = safe_ratio(avg_amount_30d, avg_txs_amount)
+  risk_factor = vulnerability_score * avg_inflation
+  inf_pressure = (1 - ratio_recent_vs_historical_transactions_amount) * risk_factor
+
 ### Features: Transacciones
 
 | Feature                       | Tipo               | Descripción                                                                                                              | 
@@ -82,7 +89,7 @@ El dataset resultante para el entrenamiento de los modelos fue confexionado a pa
 | `ratio_recent_vs_past_amount` | Numérica Continua  | Ratio que considera el monto transaccionado en los últimos 30 días en comparación con los 60 días anteriores a estos 30. |
 | `ratio_cashouts`              | Numérica Continua  | Ratio de cantidad de retiros de dinero en relación a la cantidad total de transacciones                                  |
 | `ratio_transfers`             | Numérica Continua  | Ratio de cantidad de transferencias de dinero en relación a la cantidad total de transacciones                           |
-| `inflation_pressure`          | Numérica Continua  |                                                                                                                          |
+| `inflation_pressure`          | Numérica Continua  | Ratio que mide vulnerabilidad del cliente frente a la inflación de su país de residencia                                 |
 
 
 * `ratio_recent_vs_past_txs`: 
@@ -94,6 +101,23 @@ El dataset resultante para el entrenamiento de los modelos fue confexionado a pa
 * `ratio_transfers`: 
   - Logaritmo (Cantidad de transacciones TRANSFER / Cantidad total de transacciones
 
+* `inflation_pressure`:
+  
+    ```
+    vulnerability_score = [1, 2, 3]
+    
+    # Inflación promedio para el período observado
+    avg_inflation = inflation_periodo['inflation_rate'].mean()
+    
+    avg_amount_30d = client[client['date'] >= d30_back]['amount'].mean()
+    if pd.isna(avg_amount_30d): 
+        avg_amount_30d = 0
+    ratio_recent_vs_historical_transactions_amount = safe_ratio(avg_amount_30d, avg_txs_amount)
+    risk_factor = vulnerability_score * avg_inflation
+    inf_pressure = (1 - ratio_recent_vs_historical_transactions_amount) * risk_factor
+    ```
+
+    
 ### Features: Interacción con la Aplicación del Banco
 
 | Feature                       | Tipo               | Descripción                                                                                                                                           | 
