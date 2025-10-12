@@ -1,2 +1,7 @@
 venv
 .ennv
+*.pyc
+*.sqlite3
+*.keras
+*.pkl
+*.ipynb_checkpoints
