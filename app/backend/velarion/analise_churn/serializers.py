@@ -1,5 +1,5 @@
 from rest_framework import serializers
-
+from django.contrib.auth.models import User
 
 class PredictSerializers(serializers.Serializer):
 
@@ -30,3 +30,8 @@ class PredictSerializers(serializers.Serializer):
     ratio_events_sessios = serializers.FloatField()
     ratio_failed_ss = serializers.FloatField()
     total_opened_push = serializers.FloatField()
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username", "email", "first_name", "last_name"]

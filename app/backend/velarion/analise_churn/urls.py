@@ -1,9 +1,7 @@
 from django.urls import path
-from .views import PredictAPIView
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from .views import PredictAPIView, user_profile
 
 urlpatterns = [
     path('predict/', PredictAPIView.as_view(), name='predict'),
-    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path("user/me/", user_profile, name="user_profile"),
 ]
