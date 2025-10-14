@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import api from '../services/api'
+import mockAPI from '../services/api'
 
 
 export default function Clients() {
@@ -8,10 +8,10 @@ const [loading, setLoading] = useState(false)
 
 
 useEffect(() => {
-setLoading(true)
-api.getClients().then((data) => {
-setClients(data)
-setLoading(false)
+    setLoading(true)
+    mockAPI.getClients().then((data) => {
+    setClients(data)
+    setLoading(false)
 })
 }, [])
 
@@ -20,15 +20,15 @@ if (loading || !clients) return <div>Carregando clientes...</div>
 
 
 return (
-<div>
-<h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Clientes</h2>
-<div className="mt-4 grid gap-3">
-{clients.map((c) => (
-<ClientCard key={c.id} client={c} />
-))}
-</div>
-</div>
-)
+    <div>
+        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Clientes</h2>
+            <div className="mt-4 grid gap-3">
+            {clients.map((c) => (
+            <ClientCard key={c.id} client={c} />
+            ))}
+        </div>
+    </div>
+    )
 }
 
 
@@ -39,7 +39,7 @@ const [loading, setLoading] = useState(false)
 
 const loadProb = async () => {
 setLoading(true)
-const r = await api.getChurnProbability(client.id)
+const r = await mockAPI.getChurnProbability(client.id)
 setProb(r.probability)
 setLoading(false)
 }
