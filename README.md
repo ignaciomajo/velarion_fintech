@@ -50,6 +50,8 @@ Esto descargará un archivo comprimido `.zip`, que podrás alojar en el director
 
 ## 4. Data Catalog (Catálogo de datos)
 
+### [ml_dataset.csv](https://github.com/ignaciomajo/velarion_fintech/blob/main/src/ml_dataset.csv)
+
 El dataset resultante para el entrenamiento de los modelos fue confexionado a partir de distintas fuentes:
 
 * <a href=https://www.kaggle.com/datasets/mathchi/churn-for-bank-customers>Dataset Churn</a>
@@ -57,7 +59,26 @@ El dataset resultante para el entrenamiento de los modelos fue confexionado a pa
 * [app_sessions.parquet](https://github.com/ignaciomajo/velarion_fintech/blob/main/datasets_consolidation_Velarion.ipynb) - Sección: **App Interaction** (generado con ayuda de IA, el código se encuentra dentro del script)
 * [IPCAs](https://github.com/ignaciomajo/velarion_fintech/blob/main/datasets_consolidation_Velarion.ipynb) Sección: **Factor Externo**(toma los registros de HICP — IPCA en español — de [Eurostat](https://ec.europa.eu/eurostat/databrowser/view/tec00118/default/table?lang=en) que contiene registros hasta 2024, y luego estimación generada con IA para los valores de 2024-08 hasta 2025-09)
 
-### Features: Perfil del Cliente
+#### Target
+
+| Feature               | Tipo                | Descripción                                                    | 
+|-----------------------|---------------------|----------------------------------------------------------------| 
+| `Exited`              | Categórica Binaria  | Condición de abandono dentro de la ventana de tiempo observada |
+
+
+#### **Ventanas Temporales**
+
+Para llevar los datos de tiempo a un formato tabular se consideró una ventana de análisis de 365 días.
+
+| VENTANA       | Período          | Comienzo          | Final            | Descripción                                           |
+|---------------|------------------|-------------------|------------------|-------------------------------------------------------|
+| WINDOW_1      | Q1               | 2024-09-30        | 2025-01-02       | Primer trimestre para observación del comportamiento  | 
+| WINDOW_2      | Q2               | 2025-01-03        | 2025-04-02       | Segundo trimestre para observación del comportamiento |
+| WINDOW_3      | Q3               | 2025-04-03        | 2025-07-01       | Tercer trimestre para observación del comportamiento  |
+| CUTOFF_DATE   | Q4               | 2025-07-02        | 2025-09-30       | Ventana de Churn                                      |
+
+
+#### **Features: Perfil del Cliente**
 
 | Feature               | Tipo                | Descripción                                                    | 
 |-----------------------|---------------------|----------------------------------------------------------------| 
@@ -73,70 +94,69 @@ El dataset resultante para el entrenamiento de los modelos fue confexionado a pa
 | `EstimatedSalary`     | Numérica Continua   | Salario estimado del cliente                                   |
 
 
-### Features: Transacciones
+#### **Features: Transacciones**
 
-| Feature                       | Tipo               | Descripción                                                                                                              | 
-|-------------------------------|--------------------|--------------------------------------------------------------------------------------------------------------------------|
-| `days_since_last_tx`          | Numérica Discreta  | Días desde la última transacción                                                                                         |
-| `txs_avg_amount`              | Numérica Continua  | Monto promedio de transacción                                                                                            |
-| `amount_std`                  | Numérica Continua  | Desviación estandar de los montos de las transacciones del cliente                                                       |
-| `avg_cashout_amount`          | Numérica Continua  | Monto promedio de retiro de dinero                                                                                       |
-| `ratio_recent_vs_past_txs`    | Numérica Continua  | Ratio que considera la actividad en los últimos 30 días en comparación con los 60 días anteriores a estos 30.            |
-| `ratio_recent_vs_past_amount` | Numérica Continua  | Ratio que considera el monto transaccionado en los últimos 30 días en comparación con los 60 días anteriores a estos 30. |
-| `ratio_cashouts`              | Numérica Continua  | Ratio de cantidad de retiros de dinero en relación a la cantidad total de transacciones                                  |
-| `ratio_transfers`             | Numérica Continua  | Ratio de cantidad de transferencias de dinero en relación a la cantidad total de transacciones                           |
-| `inflation_pressure`          | Numérica Continua  | Ratio que mide vulnerabilidad del cliente frente a la inflación de su país de residencia                                 |
+| Feature                       | Tipo               | Descripción                                                                                                                   | 
+|-------------------------------|--------------------|-------------------------------------------------------------------------------------------------------------------------------|
+| `days_since_last_tx`          | Numérica Discreta  | Días desde la última transacción                                                                                              |
+| `avg_tx_amount`               | Numérica Continua  | Monto promedio de transacción                                                                                                 |
+| `std_tx_amount`               | Numérica Continua  | Desviación estandar de los montos de las transacciones del cliente                                                            |
+| `tx_q1q2_rate_of_change`      | Numérica Continua  | Ratio que considera la cantidad de transacciones en el primer trimestre (Q1) en comparación con el segundo trimestre(Q2)      |
+| `tx_q1q2_rate_of_change`      | Numérica Continua  | Ratio que considera la cantidad de transacciones en el segundo trimestre (Q2) en comparación con el tercer trimestre (Q3)     |
+
+**Nota**: `client` representa una fila
+
+> **`tx_q1q2_rate_of_change`**
+```
+client['tx_q1q2_rate_of_change'] = (client['total_tx_q2'] - client['total_tx_q1']) / client['total_tx_q1']
+```
+
+> **`tx_q2q3_rate_of_change`**
+```
+client['tx_q2q3_rate_of_change'] = (client['total_tx_q3'] - client['total_tx_q2']) / client['total_tx_q2']
+```
+
+#### Features: Interacción con la Aplicación de la empresa
+
+| Feature                        | Tipo               | Descripción                                                                                                                     | 
+|--------------------------------|--------------------|---------------------------------------------------------------------------------------------------------------------------------|
+| `days_since_last_ss`           | Numérica Discreta  | Días desde la último login                                                                                                      |
+| `avg_ss_duration_min`          | Numérica Continua  | Duración promedio en minutos de logins del cliente                                                                              |
+| `std_ss_duration_min`          | Numérica Continua  | Desviación estandar de la duración en minutos del login del cliente                                                             |
+| `ss_q1q2_rate_of_change`       | Numérica Continua  | Ratio que considera la cantidad de sesiones (logins) en el primer trimestre (Q1) en comparación con el segundo trimestre(Q2)    |
+| `ss_q1q2_rate_of_change`       | Numérica Continua  | Ratio que considera la cantidad de sesiones (logins) en el segundo trimestre (Q2) en comparación con el tercer trimestre (Q3)   |
+| `failed_ratio_spike_q2`        | Numérica Continua  | Diferencia entre el ratio del primer trimestre (Q1) y el segundo trimestre (Q2)                                                 |
+| `failed_ratio_spike_q3`        | Numérica Continua  | Diferencia entre el ratio del primer trimestre (Q2) y el segundo trimestre (Q3)                                                 |
+| `failed_ratio_volatility`      | Numérica Continua  | Desviación estandar calculada a partir del ratio de fallos de los 3 tirmestres [Q1, Q2, Q3]                                     |      
 
 
-* `ratio_recent_vs_past_txs`: 
-  - Logaritmo (Transacciones en los ultimos 30 días / Transacciones desde `CUTOFF_DATE - 30 días` hasta `CUTOFF_DATE - 90 días` )
-* `ratio_recent_vs_past_amount`:
-  - Logaritmo (Monto total en los ultimos 30 días / Monto total desde `CUTOFF_DATE - 30 días` hasta `CUTOFF_DATE - 90 días` )
-* `ratio_cashouts`:
-  - Logaritmo (Cantidad de transacciones CASH_OUT / Cantidad total de transacciones)
-* `ratio_transfers`: 
-  - Logaritmo (Cantidad de transacciones TRANSFER / Cantidad total de transacciones
+**Nota**: `client` representa una fila
 
-* `inflation_pressure`:
-  
-    ```
-    vulnerability_score = [1, 2, 3]
-    
-    # Inflación promedio para el período observado
-    avg_inflation = inflation_periodo['inflation_rate'].mean()
-    
-    avg_amount_30d = client[client['date'] >= d30_back]['amount'].mean()
-    if pd.isna(avg_amount_30d): 
-        avg_amount_30d = 0
-    ratio_recent_vs_historical_transactions_amount = safe_ratio(avg_amount_30d, avg_txs_amount)
-    risk_factor = vulnerability_score * avg_inflation
-    inf_pressure = (1 - ratio_recent_vs_historical_transactions_amount) * risk_factor
-    ```
+> **`ss_q1q2_rate_of_change`**
+```
+client['ss_q1q2_rate_of_change'] = (client['total_ss_q2'] - client['total_ss_q1']) / client['total_ss_q1']
+```
 
-    
-### Features: Interacción con la Aplicación del Banco
+> **`ss_q2q3_rate_of_change`**
+```
+client['ss_q2q3_rate_of_change'] = (client['total_tx_q3'] - client['total_tx_q2']) / client['total_tx_q2']
+```
 
-| Feature                       | Tipo               | Descripción                                                                                                                                           | 
-|-------------------------------|--------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
-|`days_since_last_ss`           | Numérica Discreta  | Días desde la último login                                                                                                                            |
-|`total_ss_past30d`             | Numérica Discreta  | Cantidad de logins en los últimos 30 días                                                                                                             |
-|`total_ss_past90d`             | Numérica Discreta  | Cantidad de logins en los últimos 90 días                                                                                                             |
-|`avg_ss_per_wk`                | Numérica Continua  | Cantidad de logins promedio por semana                                                                                                                |
-|`total_ss_duration_min`        | Numérica Continua  | Cantidad total en minutos de la duración de los logins del cliente (tiempo total utilizando la aplicación)                                            |
-|`avg_ss_duration_min`          | Numérica Continua  | Duración promedio en minutos de logins del cliente                                                                                                    |
-|`std_ss_duration_min`          | Numérica Continua  | Desviación estandar de la duración en minutos del login del cliente                                                                                   |
-|`avg_cashout_amount`           | Numérica Continua  | Monto promedio de retiro de dinero                                                                                                                    |
-|`ratio_ss_time_recent_vs_past` | Numérica Continua  | Ratio que considera el tiempo de utilización de la aplicación del banco en los últimos 30 días en comparación con los 60 días anteriores a estos 30.  |
-|`ratio_events_sessios`         | Numérica Continua  | Ratio que considera el uso de funcionalidades de la aplicación: [`used_transfer`, `used_payment`, `used_invest`], en relación a la cantidad de logins.|
-|`ratio_failed_ss`              | Numérica Continua  | Ratio de cantidad de intentos de login fallidos en relación a la cantidad total de logins                                                             |
-|`total_opened_push`            | Numérica Discreta  | Cantidad total de notificaciones abiertas dentro de la aplicación.                                                                                    |
+> **`failed_ratio_spike_q2`**
+```
+client['failed_ratio_spike_q2'] = (client['total_failed_ss_q2'] / client['total_ss_q2']) - (client['total_failed_ss_q1'] / client['total_ss_q1'])
+```
 
-* `ratio_ss_time_recent_vs_past`: 
-  - Logaritmo (Duración total en minutos en los ultimos 30 días / Duración total en minutos desde `CUTOFF_DATE - 30 días` hasta `CUTOFF_DATE - 90 días` )
-* `ratio_events_sessios`: 
-  - Logaritmo (Suma total de funcionalidades utilizadas / Cantidad total de logins desde)
-* `ratio_failed_ss`: 
-  - Logaritmo (Cantidad de `failed_login` / Cantidad total de logins)
+> **`failed_ratio_spike_q3`**
+```
+client['failed_ratio_spike_q3'] = (client['total_failed_ss_q3'] / client['total_ss_q3']) - (client['total_failed_ss_q2'] / client['total_ss_q2'])
+```
+
+> **`failed_ratio_volatility`** 
+```
+client['failed_ratio_volatility'] = [(client['total_failed_ss_q1'] / client['total_ss_q1']), (client['total_failed_ss_q2'] / client['total_ss_q2']), (client['total_failed_ss_q3'] / client['total_ss_q3'])].std()
+```
+
 
 ## 5. Resultados y conclusiones
 
@@ -166,5 +186,5 @@ El dataset resultante para el entrenamiento de los modelos fue confexionado a pa
 * **Carlos Silva**
   - Rol: ML Engineer
 * **Ignacio Majo**
-  - Rol: Data Engineer / ML Engineer
+  - Rol: Data Engineer / Data Scientist
     
