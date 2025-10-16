@@ -49,10 +49,13 @@ Esto descargará un archivo comprimido `.zip`, que podrás alojar en el director
 
 
 ## 4. Data Catalog (Catálogo de datos)
+
 El dataset resultante para el entrenamiento de los modelos fue confexionado a partir de distintas fuentes:
 
 * <a href=https://www.kaggle.com/datasets/mathchi/churn-for-bank-customers>Dataset Churn</a>
 * <a href="https://www.kaggle.com/datasets/ealaxi/paysim1>https://www.kaggle.com/datasets/ealaxi/paysim1">Dataset PaySim</a>
+* [app_sessions.parquet](https://github.com/ignaciomajo/velarion_fintech/blob/main/datasets_consolidation_Velarion.ipynb) - Sección: **App Interaction** (generado con ayuda de IA, el código se encuentra dentro del script)
+* [IPCAs](https://github.com/ignaciomajo/velarion_fintech/blob/main/datasets_consolidation_Velarion.ipynb) Sección: **Factor Externo**(toma los registros de HICP — IPCA en español — de [Eurostat](https://ec.europa.eu/eurostat/databrowser/view/tec00118/default/table?lang=en) que contiene registros hasta 2024, y luego estimación generada con IA para los valores de 2024-08 hasta 2025-09)
 
 ### Features: Perfil del Cliente
 
