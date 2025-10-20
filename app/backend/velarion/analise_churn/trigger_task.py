@@ -1,0 +1,2 @@
+from tasks import update_churn_probabilities
+update_churn_probabilities.delay()

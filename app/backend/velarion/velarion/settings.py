@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "drf_spectacular",
     "analise_churn",
+    "customers",
     "corsheaders",
 ]
 
@@ -141,12 +142,24 @@ WSGI_APPLICATION = "velarion.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
+
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'db_velarion',
+        'USER': 'postgres',
+        'PASSWORD': 'root',
+        'HOST': 'localhost',  
+        'PORT': '5432',       
     }
 }
+
 
 
 # Password validation
@@ -166,6 +179,21 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
+
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+# Opcional: agendador
+CELERY_BEAT_SCHEDULE = {
+    'update-churn-every-10min': {
+        'task': 'analise_churn.tasks.update_churn_probabilities',
+        'schedule': 600.0,  # a cada 10 minutos
+    },
+}
 
 
 # Internationalization
