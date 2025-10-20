@@ -19,13 +19,22 @@ const mockAPI = {
   },
 
   async getClients() {
-    await fakeDelay(600);
-    return Array.from({ length: 20 }).map((_, i) => ({
-      id: i + 1,
-      name: `Cliente ${i + 1}`,
-      plan: i % 3 === 0 ? "Pro" : "Basic",
-      lastActive: new Date(Date.now() - i * 86400000).toISOString(),
-    }));
+    // await fakeDelay(600);
+    // return Array.from({ length: 20 }).map((_, i) => ({
+    //   id: i + 1,
+    //   name: `Cliente ${i + 1}`,
+    //   plan: i % 3 === 0 ? "Pro" : "Basic",
+    //   lastActive: new Date(Date.now() - i * 86400000).toISOString(),
+    // }));
+
+     try {
+      const profile = await api.axios.get("/churn-prediction/?page=1&page_size=50")
+      return profile.data.results
+
+    } catch (error) {
+      console.error("❌ Erro em userProfile:", error.response?.data || error.message);
+      throw error;
+    }
   },
 
   async getChurnProbability(clientId) {

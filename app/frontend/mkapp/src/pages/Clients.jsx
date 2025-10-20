@@ -11,6 +11,7 @@ useEffect(() => {
     setLoading(true)
     mockAPI.getClients().then((data) => {
     setClients(data)
+    console.log(data)
     setLoading(false)
 })
 }, [])
@@ -38,25 +39,22 @@ const [loading, setLoading] = useState(false)
 
 
 const loadProb = async () => {
-setLoading(true)
-const r = await mockAPI.getChurnProbability(client.id)
-setProb(r.probability)
-setLoading(false)
+    setLoading(true)
+    const r = await mockAPI.getChurnProbability(client.id)
+    setProb(r.probability)
+    setLoading(false)
 }
 
 
 return (
-<div className="p-4 bg-background-light dark:bg-background-dark border border-gray-200 dark:border-gray-800 rounded-lg flex items-center justify-between">
-<div>
-<div className="font-medium">{client.name}</div>
-<div className="text-sm text-gray-500">Plano: {client.plan}</div>
-</div>
-<div className="flex items-center gap-4">
-<div className="text-sm">{prob == null ? '—' : `${Math.round(prob * 100)}%`}</div>
-<button onClick={loadProb} className="px-3 py-1 rounded-lg bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 transition">
-{loading ? '...' : 'Calcular risco'}
-</button>
-</div>
-</div>
-)
+    <div className="p-4 bg-background-light dark:bg-background-dark border border-gray-200 dark:border-gray-800 rounded-lg flex items-center justify-between">
+        <div>
+            <div className="font-medium">{client.cliente_id}</div>
+            <div className="text-sm text-gray-500">Modelo: {client.modelo}</div>
+        </div>
+        <div className="flex items-center gap-4">
+            <div className="text-sm">{client.prob_churn*100}%</div>
+        </div>
+    </div>
+    )
 }
