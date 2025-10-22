@@ -1,7 +1,7 @@
 venv
-.ennv
+.env
 *.pyc
 *.sqlite3
 *.keras
-*.pkl
 *.ipynb_checkpoints
+*node_modules
