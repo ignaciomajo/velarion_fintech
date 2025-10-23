@@ -1,9 +1,8 @@
-import joblib
 from django.conf import settings
-from tensorflow.keras.models import load_model
+import pickle
 
-PIPELINE_PATH = settings.BASE_DIR / "analise_churn/ml/pipeline_churn.pkl"
-MODEL_PATH = settings.BASE_DIR / "analise_churn/ml/rnn_churn_model.keras"
+MODEL_PATH = settings.BASE_DIR / "analise_churn/ml/champion_model.pkl"
+ENCODER_PATH = settings.BASE_DIR / "analise_churn/ml/one_hot_encoder.pkl"
 
 _pipeline = None
 _model = None
@@ -11,11 +10,13 @@ _model = None
 def get_pipeline():
     global _pipeline
     if _pipeline is None:
-        _pipeline = joblib.load(PIPELINE_PATH)
+        with open(ENCODER_PATH, 'rb') as f:
+            _pipeline = pickle.load(f)
     return _pipeline
 
 def get_model():
     global _model
     if _model is None:
-        _model = load_model(MODEL_PATH)
+        with open(MODEL_PATH, 'rb') as f:
+            _model = pickle.load(f)
     return _model
