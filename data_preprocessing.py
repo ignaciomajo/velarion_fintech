@@ -4,8 +4,8 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 from datetime import datetime
+import pickle
 
-archivos = 0
 
 extension = '.parquet'
 
@@ -26,7 +26,8 @@ TX_DATA_PATH = MONTHLY_DATA_PATH / tx
 app = Path('app')
 APP_DATA_PATH = MONTHLY_DATA_PATH / app
 
-
+champion = Path('champion')
+CHAMPION_PATH = PROJECT_PATH / champion
 
 img = Path('img')
 IMG_PATH = PROJECT_PATH / img
@@ -80,8 +81,8 @@ WINDOW_Q1_START = TODAY - pd.Timedelta(days=270)
 df_tx = pd.concat(df_tx, ignore_index=True)
 df_ss = pd.concat(df_ss, ignore_index=True)
 
-df_tx = df_tx[df_tx['date'] >= WINDOW_Q1_START]
-df_ss = df_ss[df_ss['date'] >= WINDOW_Q1_START]
+df_tx = df_tx[(df_tx['date'] >= WINDOW_Q1_START) & (df_tx['date'] < TODAY)]
+df_ss = df_ss[(df_ss['date'] >= WINDOW_Q1_START) & (df_ss['date'] < TODAY)]
 
 df_tx.sort_values(by='date', inplace=True)
 df_ss.sort_values(by='date', inplace=True)
@@ -90,7 +91,6 @@ df_clients = pd.read_parquet(MONTHLY_DATA_PATH/'clients_no_churners.parquet')
 
 clients_uniques = df_clients['CustomerId'].unique()
 
-ss_uniques = df_ss['CustomerId'].unique()
 
 
 # ======================================
@@ -139,7 +139,7 @@ consolidated_ds = df_clients_filtered.merge(features_tx, on='CustomerId')
 # ========================================
 
 # Crea un DataFrame para los features
-features_ss = df_ss_filtered.groupby('CustomerId').agg(
+features_ss = df_ss.groupby('CustomerId').agg(
     avg_ss_duration=('duration_min', 'mean'),
     std_ss_duration=('duration_min', 'std'),
     total_ss=('duration_min', 'count'),
@@ -221,14 +221,82 @@ features_ss['failed_ratio_volatility'] = features_ss[ratio_cols].std(axis=1)
 ss_uniques = features_ss['CustomerId'].unique()
 consolidated_ds = consolidated_ds[consolidated_ds['CustomerId'].isin(ss_uniques)]
 
-final_dataset = consolidated_ds.merge(features_ss, on='CustomerId')
+consolidated_ds = consolidated_ds.merge(features_ss, on='CustomerId')
 
-final_dataset.drop(['vulnerability_tier', 'vulnerability_score',
+consolidated_ds.drop(['RowNumber', 'Surname', 'vulnerability_tier', 'vulnerability_score',
                       'total_tx_q1', 'total_tx_q2', 'total_tx_q3','total_ss_q1', 'total_ss_q2', 'total_ss_q3', 'failed_ratio_q1',
                       'total_failed_ss_q1', 'total_failed_ss_q2', 'total_failed_ss_q3',
                       'failed_ratio_q2', 'failed_ratio_q3', 'last_tx_date', 'last_ss_date', 'total_tx','total_ss'],
                      axis=1,
                      inplace=True)
 
+
+# =======================
+#        OBJECTS
+# =======================
+
+one_hot_path = Path('champion/')
+
+scaler_path = Path()
+
+categoricas_path = Path()
+
+numericas_path = Path()
+
+col_order_path = Path()
+
+
+
+with open(CHAMPION_PATH / 'one_hot_encoder.pkl', 'rb') as f:
+    one_hot_encoder = pickle.load(f)
+    
+with open(CHAMPION_PATH / 'scaler.pkl', 'rb') as f:
+    scaler = pickle.load(f)
+    
+with open(CHAMPION_PATH / 'categoricas.pkl', 'rb') as f:
+    categoricas = pickle.load(f)
+    
+with open(CHAMPION_PATH / 'numericas.pkl', 'rb') as f:
+    numericas = pickle.load(f)
+    
+with open(CHAMPION_PATH / 'col_order.pkl', 'rb') as f:
+    col_order = pickle.load(f)
+
+latest_cids = consolidated_ds['CustomerId'].values.copy()
+
+with open(CHAMPION_PATH / 'latest_cids.pkl', 'wb') as f:
+    pickle.dump(latest_cids, f)
+
+
+consolidated_ds.drop('CustomerId', axis=1, inplace=True)
+
+# ====================================
+#    ENCODING VARIABLES CATEGÓRICAS
+# ====================================
+
+ds_encoded = one_hot_encoder.transform(consolidated_ds)
+
+columnas = one_hot_encoder.get_feature_names_out()
+columnas_encoded = []
+for columna in columnas:
+    columna = columna.split('__')[1]
+    columnas_encoded.append(columna)
+
+df_encoded = pd.DataFrame(ds_encoded, 
+                          columns=columnas_encoded, 
+                          index=consolidated_ds.index)
+
+# ====================================
+#    ESCALADO VARIABLES NUMÉRICAS
+# ====================================
+
+df_encoded[numericas] = scaler.transform(df_encoded[numericas])
+
+final_dataset = df_encoded[col_order]
+
+
+# ==============================
+#     GUARDADO DATASET FINAL
+# ==============================
 
 final_dataset.to_csv(DATA_PATH/ 'latest_dataset.csv', index=False)
