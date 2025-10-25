@@ -6,6 +6,9 @@ from pathlib import Path
 from datetime import datetime
 import pickle
 
+# ====================================
+#               PATHS
+# ====================================
 
 extension = '.parquet'
 
@@ -39,6 +42,10 @@ reports = Path('reports')
 REPORTS_PATH = PROJECT_PATH / reports
 
 
+# ====================================
+#         EXTRACCIÓN DE DATOS
+# ====================================
+
 
 df_tx = []
 df_ss = []
@@ -70,6 +77,11 @@ if archivos_encontrados > 0:
     print(f'\nTotal de archivos encontrados: {archivos_encontrados}')
 else:
     print(f'No se encontraron archivos con extension {extension}')
+
+
+# ====================================
+#         VENTANAS DE TIEMPO
+# ====================================
 
 TODAY = datetime.today()
 WINDOW_Q3_START = TODAY - pd.Timedelta(days=90)
@@ -231,20 +243,9 @@ consolidated_ds.drop(['RowNumber', 'Surname', 'vulnerability_tier', 'vulnerabili
                      inplace=True)
 
 
-# =======================
-#        OBJECTS
-# =======================
-
-one_hot_path = Path('champion/')
-
-scaler_path = Path()
-
-categoricas_path = Path()
-
-numericas_path = Path()
-
-col_order_path = Path()
-
+# ====================================
+#               OBJETOS
+# ====================================
 
 
 with open(CHAMPION_PATH / 'one_hot_encoder.pkl', 'rb') as f:
