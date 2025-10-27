@@ -191,7 +191,7 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_BEAT_SCHEDULE = {
     'update-churn-every-10min': {
         'task': 'analise_churn.tasks.update_churn_probabilities',
-        'schedule': 600.0,  # a cada 10 minutos
+        'schedule': timedelta(minutes=40),  
     },
 }
 
