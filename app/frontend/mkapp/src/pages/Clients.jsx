@@ -52,7 +52,8 @@ return (
             <div className="font-medium">{client.cliente_id}</div>
             <div className="text-sm text-gray-500">Modelo: {client.modelo}</div>
         </div>
-        <div className="flex items-center gap-4">
+        <div >
+            <div className="font-medium">{client.riesgo}</div>
             <div className="text-sm">{client.prob_churn*100}%</div>
         </div>
     </div>

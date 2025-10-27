@@ -9,23 +9,37 @@ const fakeDelay = (ms = 600) => new Promise((r) => setTimeout(r, ms));
 
 const mockAPI = {
   async getOverview() {
-    await fakeDelay(700);
-    return {
-      churn: 0.12,
-      retention: 0.88,
-      newCustomers: 500,
-      avgRevenue: 150,
-    };
-  },
+   
+     try {
+      const response = await api.axios.get("/churn-prediction/resumen_riesgo/");
+      const resumen = response.data;
+      console.log(resumen)
+      // Transforma os dados recebidos em métricas agregadas
+      const total = resumen.reduce((acc, r) => acc + r.total, 0);
+      console.log(total)
+      const critical = resumen.find(r => r.riesgo === "Critical")?.total || 0;
+      const alto = resumen.find(r => r.riesgo === "Alto")?.total || 0;
+
+      // Exemplo de cálculo (ajuste conforme a lógica do seu negócio)
+      const churn = total > 0 ? (critical + alto) / total : 0;
+      const retention = 1 - churn;
+
+      return {
+        churn: churn.toFixed(2),          // 0.12
+        retention: retention.toFixed(2),  // 0.88
+        critical,
+        alto,
+        total,
+      };
+
+    } catch (error) {
+      console.error("❌ Erro Resumen:", error.response?.data || error.message);
+      throw error;
+    }
+  }
+,
 
   async getClients() {
-    // await fakeDelay(600);
-    // return Array.from({ length: 20 }).map((_, i) => ({
-    //   id: i + 1,
-    //   name: `Cliente ${i + 1}`,
-    //   plan: i % 3 === 0 ? "Pro" : "Basic",
-    //   lastActive: new Date(Date.now() - i * 86400000).toISOString(),
-    // }));
 
      try {
       const profile = await api.axios.get("/churn-prediction/?page=1&page_size=50")
