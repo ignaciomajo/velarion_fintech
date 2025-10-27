@@ -11,20 +11,17 @@ extension = '.parquet'
 
 
 # Obtiene el path actual
-PROJECT_PATH = os.getcwd()
+PROJECT_PATH = Path(__file__).resolve().parent
 
 
 src = Path('src')
 DATA_PATH = PROJECT_PATH / src
 
-splited = Path('monthly_data')
-MONTHLY_DATA_PATH = DATA_PATH / splited
-
 tx = Path('tx')
-TX_DATA_PATH = MONTHLY_DATA_PATH / tx
+TX_DATA_PATH = DATA_PATH / tx
 
 app = Path('app')
-APP_DATA_PATH = MONTHLY_DATA_PATH / app
+APP_DATA_PATH = DATA_PATH/ app
 
 champion = Path('champion')
 CHAMPION_PATH = PROJECT_PATH / champion
@@ -71,7 +68,7 @@ if archivos_encontrados > 0:
 else:
     print(f'No se encontraron archivos con extension {extension}')
 
-TODAY = datetime.today()
+TODAY =  datetime.today()
 WINDOW_Q3_START = TODAY - pd.Timedelta(days=90)
 WINDOW_Q2_END = TODAY - pd.Timedelta(days=91)
 WINDOW_Q2_START = TODAY - pd.Timedelta(days=180)
@@ -87,7 +84,7 @@ df_ss = df_ss[(df_ss['date'] >= WINDOW_Q1_START) & (df_ss['date'] < TODAY)]
 df_tx.sort_values(by='date', inplace=True)
 df_ss.sort_values(by='date', inplace=True)
 
-df_clients = pd.read_parquet(MONTHLY_DATA_PATH/'clients_no_churners.parquet')
+df_clients = pd.read_parquet(DATA_PATH/'clients_no_churners.parquet')
 
 clients_uniques = df_clients['CustomerId'].unique()
 
@@ -269,7 +266,7 @@ with open(CHAMPION_PATH / 'latest_cids.pkl', 'wb') as f:
 
 
 consolidated_ds.drop('CustomerId', axis=1, inplace=True)
-
+consolidated_ds.to_csv(DATA_PATH/ 'latest_dataset2.csv', index=False)
 # ====================================
 #    ENCODING VARIABLES CATEGÓRICAS
 # ====================================
