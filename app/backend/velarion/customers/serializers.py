@@ -13,4 +13,4 @@ class ChurnPredictionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ChurnPrediction
-        fields = ['id', 'cliente_id', 'modelo', 'prob_churn', 'data_execucao']
+        fields = ['id', 'cliente_id', 'modelo', 'prob_churn', 'data_execucao','riesgo']

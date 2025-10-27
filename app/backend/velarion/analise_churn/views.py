@@ -54,16 +54,29 @@ class PredictAPIView(APIView):
 
     
     def post(self, request):
+        
         serializer = PredictSerializers(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
 
         df_in = pd.DataFrame([data])
 
-        proba = calcular_churn_probabilidad(data=df_in)
-        
+        proba = float(calcular_churn_probabilidad(data=df_in))
+        print(proba)
+
+        if proba > 0.75:
+            riesgo = "Critical"
+        elif (proba > 0.5) and (proba <= 0.75):
+            riesgo = "Alto"
+        elif (proba > 0.35) and (proba <= 0.5):
+            riesgo = "Medio"
+        else:
+            riesgo = "Bajo"
+
         try:
-          result = {"probability": f"{proba:.2f}"}
+          result = {"probability": f"{proba}",
+                    "riesgo": riesgo
+                    }
 
         except Exception as e:
             # fallback se pipeline tiver interface diferente
