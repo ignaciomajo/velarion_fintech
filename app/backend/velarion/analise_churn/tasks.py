@@ -13,10 +13,42 @@ DB_CONFIG = {
 
 API_URL = "http://127.0.0.1:8000/api/predict/"
 
+# Mapa entre nomes do banco e nomes esperados pelo modelo
+FIELD_MAP = {
+    "creditscore": "CreditScore",
+    "geography": "Geography",
+    "gender": "Gender",
+    "age": "Age",
+    "tenure": "Tenure",
+    "balance": "Balance",
+    "numofproducts": "NumOfProducts",
+    "hascrcard": "HasCrCard",
+    "isactivemember": "IsActiveMember",
+    "estimatedsalary": "EstimatedSalary",
+    "avg_tx_amount": "avg_tx_amount",
+    "std_tx_amount": "std_tx_amount",
+    "days_since_last_tx": "days_since_last_tx",
+    "tx_q1q2_rate_of_change": "tx_q1q2_rate_of_change",
+    "tx_q2q3_rate_of_change": "tx_q2q3_rate_of_change",
+    "avg_ss_duration": "avg_ss_duration",
+    "std_ss_duration": "std_ss_duration",
+    "days_since_last_ss": "days_since_last_ss",
+    "ss_q1q2_rate_of_change": "ss_q1q2_rate_of_change",
+    "ss_q2q3_rate_of_change": "ss_q2q3_rate_of_change",
+    "failed_ratio_spike_q2": "failed_ratio_spike_q2",
+    "failed_ratio_spike_q3": "failed_ratio_spike_q3",
+    "failed_ratio_volatility": "failed_ratio_volatility",
+}
+
+def rename_fields(data):
+    """Renomeia as chaves conforme o mapa FIELD_MAP"""
+    return {FIELD_MAP.get(k, k): v for k, v in data.items()}
+
+
 def get_connection():
     return psycopg2.connect(**DB_CONFIG)
 
-@shared_task
+@shared_task(acks_late=True, max_retries=2)
 def update_churn_probabilities():
     print("update")
     conn = None
@@ -24,16 +56,12 @@ def update_churn_probabilities():
         conn = get_connection()
         cur = conn.cursor()
 
+        cur.execute("TRUNCATE TABLE churn_predictions RESTART IDENTITY;")
+        print("✅ churn_predictions truncada e IDs reiniciados")
+
         # Seleciona todos os clientes e suas features
         cur.execute("""
-            SELECT id, "CreditScore", "Age", "Tenure", "Balance", "NumOfProducts",
-                   "HasCrCard", "IsActiveMember", "EstimatedSalary", days_since_last_tx,
-                   txs_avg_amount, amount_std, avg_cashout_amount, ratio_recent_vs_past_txs,
-                   ratio_recent_vs_past_amount, ratio_cashouts, ratio_transfers,
-                   inflation_pressure, days_since_last_ss, total_ss_past30d, total_ss_past90d,
-                   avg_ss_per_wk, avg_ss_duration_min, std_ss_duration_min,
-                   ratio_ss_time_recent_vs_past, ratio_events_sessios, ratio_failed_ss,
-                   total_opened_push
+            SELECT *
             FROM public.client_feature;
         """)
 
@@ -42,26 +70,29 @@ def update_churn_probabilities():
 
         for row in rows:
             user_data = dict(zip(columns, row))
-            user_id = user_data.pop("id")  # remove o id do payload
 
+            user_id = user_data.pop("id")  # remove o id do payload
+            payload = rename_fields(user_data)
             # Envia os dados para o endpoint de predição
-            response = requests.post(API_URL, json=user_data)
+            response = requests.post(API_URL, json=payload)
 
             if response.status_code == 200:
                 result = response.json()
                 prob = float(result.get("probability", 0))
-                modelo = "RNN"
+                riesgo = result.get("riesgo",0)
+                modelo = "LightGBM"
                 # Atualiza a tabela churn_predictions
                 cur.execute("""
                     INSERT INTO churn_predictions (
                         cliente_id,
                         prob_churn,
                         modelo,
-                        data_execucao
-                    ) VALUES (%s, %s, %s, %s)
-                """, (user_id, prob, modelo, datetime.now()))
+                        data_execucao,
+                        riesgo
+                    ) VALUES (%s, %s, %s, %s,%s)
+                """, (user_id, prob, modelo, datetime.now(),riesgo))
 
-                print(f"✅ Cliente {user_id} inserido -> prob={prob:.3f}")
+                print(f"✅ Cliente {user_id} inserido -> prob={prob}")
 
 
             else:
