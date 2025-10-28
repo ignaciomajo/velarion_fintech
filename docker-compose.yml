@@ -1,0 +1,137 @@
+version: "3.9"
+
+services:
+  # ===========================
+  # Django Backend
+  # ===========================
+  django:
+    build:
+      context: ./app/backend/velarion
+      dockerfile: Dockerfile
+    container_name: velarion_django
+    command: python3 manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./app/backend/velarion:/app
+    depends_on:
+      - redis
+      - db
+    ports:
+      - "8000:8000"
+
+  # ===========================
+  # Celery Worker
+  # ===========================
+  celery:
+    build:
+      context: ./app/backend/velarion
+    container_name: velarion_celery_worker
+    command: celery -A velarion worker -l info
+    volumes:
+      - ./app/backend/velarion:/app
+    depends_on:
+      - django
+      - redis
+
+  # ===========================
+  # Celery Beat
+  # ===========================
+  beat:
+    build:
+      context: ./app/backend/velarion
+    container_name: velarion_celery_beat
+    command: celery -A velarion beat -l info
+    volumes:
+      - ./app/backend/velarion:/app
+    depends_on:
+      - redis
+      - django
+
+  # ===========================
+  # Flower (Celery monitor)
+  # ===========================
+  flower:
+    build:
+      context: ./app/backend/velarion
+    container_name: velarion_flower
+    command: celery -A velarion flower --port=5555
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
+      - django
+
+  # ===========================
+  # Redis (broker)
+  # ===========================
+  redis:
+    image: redis:6
+    container_name: velarion_redis
+    ports:
+      - "6379:6379"
+
+  # ===========================
+  # PostgreSQL (DB compartilhado)
+  # ===========================
+  db:
+    image: postgres:14
+    container_name: velarion_postgres
+    environment:
+      POSTGRES_DB: db_velarion
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # ===========================
+  # Apache Airflow
+  # ===========================
+  airflow:
+    build:
+      context: ./airflow-pipeline
+      dockerfile: Dockerfile
+    image: velarion_airflow:latest
+    container_name: velarion_airflow
+    restart: always
+    env_file:
+      - ./airflow-pipeline/.env
+    depends_on:
+      - django
+      - db
+    environment:
+      AIRFLOW_HOME: /home/airflow/NoCountry/velarion_fintech/airflow-pipeline
+      AIRFLOW__CORE__DAGS_FOLDER: /home/airflow/NoCountry/velarion_fintech/airflow-pipeline/dags
+      AIRFLOW__CORE__LOGS_FOLDER: /home/airflow/NoCountry/velarion_fintech/airflow-pipeline/logs
+      AIRFLOW__CORE__PLUGINS_FOLDER: /home/airflow/NoCountry/velarion_fintech/airflow-pipeline/plugins
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://postgres:root@velarion_postgres:5432/airflow_db
+    volumes:
+      - ./airflow-pipeline/dags:/home/airflow/NoCountry/velarion_fintech/airflow-pipeline/dags
+      - ./airflow-pipeline/logs:/home/airflow/NoCountry/velarion_fintech/airflow-pipeline/logs
+      - ./airflow-pipeline/plugins:/home/airflow/NoCountry/velarion_fintech/airflow-pipeline/plugins
+      - ./airflow-pipeline/scripts/init_airflow.sh:/home/airflow/NoCountry/velarion_fintech/airflow-pipeline/scripts/init_airflow.sh
+      - ./data_preprocessing.py:/home/airflow/NoCountry/velarion_fintech/data_preprocessing.py
+      - ./champion:/home/airflow/NoCountry/velarion_fintech/champion
+      - ./models:/home/airflow/NoCountry/velarion_fintech/models
+      - ./src:/home/airflow/NoCountry/velarion_fintech/src
+
+
+    entrypoint: ["/bin/bash", "/home/airflow/NoCountry/velarion_fintech/airflow-pipeline/scripts/init_airflow.sh"]
+    ports:
+      - "8080:8080"
+
+
+  # ===========================
+  # Frontend (React/Vite)
+  # ===========================
+  frontend:
+    build:
+      context: ./app/frontend/mkapp
+      dockerfile: Dockerfile
+    container_name: velarion_frontend
+    ports:
+      - "5173:5173"
+
+volumes:
+  postgres_data:

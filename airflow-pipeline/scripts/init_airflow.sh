@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
+
 # Carregar variáveis de ambiente
 echo "📦 Carregando variáveis de ambiente..."
 export $(grep -v '^#' .env | xargs)
@@ -20,11 +21,11 @@ airflow users create \
     --lastname User \
     --role Admin \
     --email admin@example.com \
-    --password admin
+    --password admin || true  # evita erro se já existir
 
-# Iniciar serviços (em background)
-echo "🚀 Iniciando webserver e scheduler..."
-airflow webserver -p 8080 &
+# Iniciar scheduler em background
 airflow scheduler &
 
-echo "✅ Airflow iniciado com sucesso em http://localhost:8080"
+# Iniciar webserver em foreground (mantém o container ativo)
+echo "🚀 Iniciando webserver..."
+exec airflow webserver -p 8080
