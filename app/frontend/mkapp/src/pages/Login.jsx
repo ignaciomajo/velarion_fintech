@@ -2,6 +2,8 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { login , userProfile} from "../services/auth";
 import { useAuth } from "../context/AuthContext";
+import logo from "../assets/velarion_logo.png";
+
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -29,11 +31,12 @@ export default function Login() {
   }
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
+    <div className="flex dark:bg-background-dark  justify-center items-center h-screen bg-gray-100">
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-xl shadow-md w-80"
+        className="dark:bg-background-dark p-6 rounded-xl shadow-md w-80"
       >
+        <img src={logo} alt="Logo" className="w-30 h-auto mb-2" />
         <h1 className="text-xl font-semibold mb-4 text-center">Login</h1>
         {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
         <input
