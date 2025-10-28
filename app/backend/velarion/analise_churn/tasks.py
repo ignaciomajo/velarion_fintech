@@ -7,7 +7,7 @@ DB_CONFIG = {
     "dbname": "db_velarion",
     "user": "postgres",
     "password": "root",
-    "host": "velarion_postgres",
+    "host": "localhost",
     "port": 5432
 }
 
