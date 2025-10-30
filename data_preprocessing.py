@@ -234,7 +234,14 @@ consolidated_ds = consolidated_ds[consolidated_ds['CustomerId'].isin(ss_uniques)
 
 consolidated_ds = consolidated_ds.merge(features_ss, on='CustomerId')
 
-consolidated_ds.drop(['RowNumber', 'Surname', 'vulnerability_tier', 'vulnerability_score',
+# consolidated_ds.drop(['RowNumber', 'Surname', 'vulnerability_tier', 'vulnerability_score',
+#                       'total_tx_q1', 'total_tx_q2', 'total_tx_q3','total_ss_q1', 'total_ss_q2', 'total_ss_q3', 'failed_ratio_q1',
+#                       'total_failed_ss_q1', 'total_failed_ss_q2', 'total_failed_ss_q3',
+#                       'failed_ratio_q2', 'failed_ratio_q3', 'last_tx_date', 'last_ss_date', 'total_tx','total_ss'],
+#                      axis=1,
+#                      inplace=True)
+
+consolidated_ds.drop(['RowNumber', 'vulnerability_tier', 'vulnerability_score',
                       'total_tx_q1', 'total_tx_q2', 'total_tx_q3','total_ss_q1', 'total_ss_q2', 'total_ss_q3', 'failed_ratio_q1',
                       'total_failed_ss_q1', 'total_failed_ss_q2', 'total_failed_ss_q3',
                       'failed_ratio_q2', 'failed_ratio_q3', 'last_tx_date', 'last_ss_date', 'total_tx','total_ss'],
@@ -268,7 +275,7 @@ with open(CHAMPION_PATH / 'latest_cids.pkl', 'wb') as f:
     pickle.dump(latest_cids, f)
 
 
-consolidated_ds.drop('CustomerId', axis=1, inplace=True)
+#consolidated_ds.drop('CustomerId', axis=1, inplace=True)
 consolidated_ds.to_csv(DATA_PATH/ 'latest_dataset2.csv', index=False)
 # ====================================
 #    ENCODING VARIABLES CATEGÓRICAS
