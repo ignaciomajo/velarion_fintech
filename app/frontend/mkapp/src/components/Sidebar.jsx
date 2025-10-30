@@ -34,27 +34,27 @@ return (
     <aside className="w-64 bg-background-light dark:bg-background-dark border-r border-gray-200 dark:border-gray-800 flex flex-col">
         <div className="p-6">
              <img src={logo} alt="Logo" className="w-30 h-auto mb-2" />
-            <p className="text-sm text-gray-500 dark:text-gray-400">Painel de controle</p>
+            <p className="text-md text-gray-500  dark:text-gray-400">Panel de control</p>
             </div>
                 <nav className="flex-1 px-4 py-2">
                     <ul className="space-y-2">
                         <li>
                         <LinkItem to="/">
-                        <span>Visão Geral</span>
+                        <span>Información general</span>
                         </LinkItem>
                         </li>
                         <li>
                         <LinkItem to="/clients">Clientes</LinkItem>
                         </li>
                         <li>
-                        <LinkItem to="/settings">Configurações</LinkItem>
+                        <LinkItem to="/settings">Configuración</LinkItem>
                         </li>
                         <li>
                             <button
                             onClick={handleLogout}
                             className="w-full text-left px-3 py-2 rounded hover:bg-primary/10 dark:hover:bg-primary/20 hover:text-primary"
                             >
-                            Sair
+                            Cerrar sesión
                             </button>
                         </li>
                     </ul>

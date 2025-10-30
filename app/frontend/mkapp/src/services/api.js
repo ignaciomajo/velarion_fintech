@@ -19,7 +19,8 @@ const mockAPI = {
       console.log(total)
       const critical = resumen.find(r => r.riesgo === "Critical")?.total || 0;
       const alto = resumen.find(r => r.riesgo === "Alto")?.total || 0;
-
+      const medio = resumen.find(r => r.riesgo === "Medio")?.total || 0;
+      const bajo = resumen.find(r => r.riesgo === "Bajo")?.total || 0;
       // Exemplo de cálculo (ajuste conforme a lógica do seu negócio)
       const churn = total > 0 ? (critical + alto) / total : 0;
       const retention = 1 - churn;
@@ -29,6 +30,8 @@ const mockAPI = {
         retention: retention.toFixed(2),  // 0.88
         critical,
         alto,
+        medio,
+        bajo,
         total,
       };
 

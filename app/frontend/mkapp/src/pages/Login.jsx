@@ -41,14 +41,14 @@ export default function Login() {
         {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
         <input
           type="text"
-          placeholder="Usuário"
+          placeholder="Nombre de usuario"
           className="border w-full p-2 mb-2 rounded"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
         <input
           type="password"
-          placeholder="Senha"
+          placeholder="Contraseña"
           className="border w-full p-2 mb-4 rounded"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -57,7 +57,7 @@ export default function Login() {
           type="submit"
           className="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700"
         >
-          Entrar
+          Iniciar sesión
         </button>
       </form>
     </div>

@@ -49,8 +49,8 @@ const loadProb = async () => {
 return (
     <div className="p-4 bg-background-light dark:bg-background-dark border border-gray-200 dark:border-gray-800 rounded-lg flex items-center justify-between">
         <div>
-            <div className="font-medium">{client.cliente_id}</div>
-            <div className="text-sm text-gray-500">Modelo: {client.modelo}</div>
+            <div className="font-medium">Cliente</div>
+            <div className="text-sm text-gray-500">ID: {client.customer_id}</div>
         </div>
         <div >
             <div className="font-medium">{client.riesgo}</div>
