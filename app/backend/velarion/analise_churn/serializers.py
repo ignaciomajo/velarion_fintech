@@ -4,14 +4,15 @@ from django.contrib.auth.models import User
 class PredictSerializers(serializers.Serializer):
 
     CreditScore = serializers.FloatField()
-    Geography = serializers.CharField()          
-    Gender = serializers.CharField()             
+    Geography_Germany = serializers.FloatField()
+    Geography_Spain = serializers.FloatField()          
+    Gender_Male = serializers.FloatField()             
     Age = serializers.FloatField()
     Tenure = serializers.FloatField()
     Balance = serializers.FloatField()
     NumOfProducts = serializers.FloatField()
-    HasCrCard = serializers.IntegerField()
-    IsActiveMember = serializers.IntegerField()
+    HasCrCard = serializers.FloatField()
+    IsActiveMember = serializers.FloatField()
     EstimatedSalary = serializers.FloatField()
 
     avg_tx_amount = serializers.FloatField()

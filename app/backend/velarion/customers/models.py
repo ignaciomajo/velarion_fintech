@@ -3,17 +3,19 @@ from django.db import models
 # Create your models here.
 class ClientFeature(models.Model):
     id = models.BigAutoField(primary_key=True)
-    
+    customerid =  models.CharField(max_length=50, null=True, blank=True)
+    surname = models.CharField(max_length=50, null=True, blank=True)
     # Campos originais compatíveis com o serializer
     creditscore = models.FloatField(null=True, blank=True)
-    geography = models.CharField(max_length=50, null=True, blank=True)
-    gender = models.CharField(max_length=20, null=True, blank=True)
+    geography_spain = models.FloatField(null=True, blank=True)
+    geography_germany = models.FloatField(null=True, blank=True)
+    gender_male = models.FloatField(null=True, blank=True)
     age = models.FloatField(null=True, blank=True)
     tenure = models.FloatField(null=True, blank=True)
     balance = models.FloatField(null=True, blank=True)
     numofproducts = models.FloatField(null=True, blank=True)
-    hascrcard = models.IntegerField(null=True, blank=True)
-    isactivemember = models.IntegerField(null=True, blank=True)
+    hascrcard = models.FloatField(null=True, blank=True)
+    isactivemember = models.FloatField(null=True, blank=True)
     estimatedsalary = models.FloatField(null=True, blank=True)
 
     # Transações (tx)

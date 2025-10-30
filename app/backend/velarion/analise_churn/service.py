@@ -1,9 +1,8 @@
-from .utils import get_pipeline, get_model
+from .utils import  get_model
 
 def calcular_churn_probabilidad(data):
 
-    pipeline = get_pipeline()
-    X_proc = pipeline.transform(data)
+    X_proc = data
 
     model = get_model()
     prob = float(model.predict_proba(X_proc)[:, 1][0])
