@@ -15,7 +15,7 @@ __pycache__/
 
 venv
 
-
+*celerybeat-schedule
 *.sqlite3
 *.keras
 *.ipynb_checkpoints
