@@ -30,7 +30,7 @@ def load_data():
 
     # Lê CSV
     df = pd.read_csv(csv_file)
-    df = df.drop(columns=['cluster_label'])
+ 
  #   df = df.where(pd.notnull(df), None)
 
     # Trunca tabela
