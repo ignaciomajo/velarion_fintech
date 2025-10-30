@@ -3,21 +3,28 @@ import requests
 import psycopg2
 from datetime import datetime
 
+from django.conf import settings
+
+db = settings.DATABASES['default']
+
 DB_CONFIG = {
-    "dbname": "db_velarion",
-    "user": "postgres",
-    "password": "root",
-    "host": "localhost",
-    "port": 5432
+    "dbname": db['NAME'],
+    "user": db['USER'],
+    "password": db['PASSWORD'],
+    "host": db['HOST'],
+    "port": db['PORT']
 }
 
-API_URL = "http://127.0.0.1:8000/api/predict/"
+API_URL = "http://127.0.0.1:8000/"
 
 # Mapa entre nomes do banco e nomes esperados pelo modelo
 FIELD_MAP = {
+    "customerid": "CustomerId",
+    "surname": "Surname",
     "creditscore": "CreditScore",
-    "geography": "Geography",
-    "gender": "Gender",
+    "geography_germany": "Geography_Germany",
+    "geography_spain": "Geography_Spain",
+    "gender_male": "Gender_Male",
     "age": "Age",
     "tenure": "Tenure",
     "balance": "Balance",
@@ -74,7 +81,7 @@ def update_churn_probabilities():
             user_id = user_data.pop("id")  # remove o id do payload
             payload = rename_fields(user_data)
             # Envia os dados para o endpoint de predição
-            response = requests.post(API_URL, json=payload)
+            response = requests.post(API_URL+"api/predict/", json=payload)
 
             if response.status_code == 200:
                 result = response.json()
