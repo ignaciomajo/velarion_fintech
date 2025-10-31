@@ -29,11 +29,12 @@ Para lograrlo, se utilizan datos de transacciones, interacciones con la aplicaci
 
 Para obtener el proyecto tienes dos opciones:
 
-1. Clonar el repositorio utilizando la línea de comandos. Solo debes dirigirte al directorio donde deseas clonar el mismo e ingresar el comando:
-   `git clone https://github.com/ignaciomajo/******`
+1. Clonar el repositorio utilizando la línea de comandos. Solo debes dirigirte al directorio donde deseas clonar el mismo e ingresar el comando:<br><br>
+   `git clone https://github.com/ignaciomajo/velarion_fintech`
 
-2. O puedes descargarlo directamente desde el repositorio en GitHub en el siguiente enlace:
-   [https://github.com/ignaciomajo/******](https://github.com/ignaciomajo/******)
+2. O puedes descargarlo directamente desde el repositorio en GitHub en el siguiente enlace:<br>
+
+   [https://github.com/ignaciomajo/velarion_fintech](https://github.com/ignaciomajo/velarion_fintech)
 
    Esto te llevará a la siguiente pantalla, donde deberás seguir los siguientes pasos:
 
@@ -45,8 +46,13 @@ Esto descargará un archivo comprimido `.zip`, que podrás alojar en el director
 
 ## 3. Etapas del proyecto 📝
 
-<br><br><br><br><br>
-
+1. [Consolidación Datasets Iniciales](https://github.com/ignaciomajo/velarion_fintech/blob/main/datasets_consolidation_Velarion.ipynb)
+2. [Análisis Exploratorio de Datos](https://github.com/ignaciomajo/velarion_fintech/blob/main/EDA_Velarion.ipynb)
+3. [Modelado de datos](https://github.com/ignaciomajo/velarion_fintech/blob/main/Modeling_Velarion.ipynb)
+4. [Datos artificiales de prueba](https://github.com/ignaciomajo/velarion_fintech/blob/main/datos_artificiales_prueba_Velarion.ipynb)
+5. [Deslpiegue API](https://velarion-fintech.onrender.com/api/docs/#/predict/)
+6. [Dashboard de control](https://github.com/ignaciomajo/velarion_fintech/blob/main/dashboard/velarion_dashboard2.pbix)
+<br>
 
 ## 4. Data Catalog (Catálogo de datos)
 
@@ -160,21 +166,55 @@ client['failed_ratio_volatility'] = [(client['total_failed_ss_q1'] / client['tot
 
 ## 5. Resultados y conclusiones
 
-<br><br><br><br><br>
+A partir del análisis realizado, uno de los puntos más criticos determinados fue que la mayor tasa de evasión corresponde a los clientes de más valor de la empresa. Esto representa un espacio crítico de observación y desarrollo de estrategias de retención.
+
+<img width="1770" height="868" alt="exit_rate_cluster_label" src="https://github.com/user-attachments/assets/a714e496-3450-41b5-a37b-18bc75fe609a" />
+
+
+A su vez, se vió que el rango etario de mayor riesgo se encuentra entre los 38 y 51 años, estos son clientes de mediana edad. 
+Para este grupo, pensar en invertir a menudo no es una opción, sino una necesidad más estructurada.
+
+* **Prioridades Clave**: Suelen estar en sus años de mayores ingresos. Sus preocupaciones principales son la jubilación (que ven más cercana), la educación de los hijos y el pago de hipotecas.
+* **Comportamiento**: La inversión es más planificada. Tienen, en promedio, más capital para invertir y tienden a usar instrumentos más tradicionales como fondos de inversión y planes de pensiones. Suelen ser un poco más conservadores porque tienen más que perder y menos tiempo para recuperarse de grandes caídas.
+* **El "Pensamiento"**: Su pensamiento sobre la inversión es más estratégico, enfocado en la preservación del capital y el crecimiento constante a largo plazo.
+
+Por lo que si se combinan clientes "VIP" y en este rango de edad, indica que la empresa está perdiendo clientes no solo valiosos, sino que deberían ser potenciales inversores.
+
+Las variables más relevantes para la predicción fueron (de mayor a menor influencia):
+
+> `Age`: Mayor predictor. La contribución a las probabilidades relativas de abandono aumentan drásticamente cuando la edad del cliente se encuentra por encima de la media.
+
+> `NumOfProducts`: Si bien valores elevados para este feautre parece actuar como protector contra el abandono, también se observa que valores altos pero no máximos contribuyen al abandono, esto podría indicar insatisfacción con algún producto en particular.
+
+> `ss_q2q3_rate_of_change`: Fuerte predictor de Churn. Si este ratio tiene un valor negativo (estandarizado) entre -1.5 y -0.5, las probabilidades relativas de abandono aumentan considerablemente -> **-0.5 UMBRAL CRÍTICO DE MONITOREO**
+
+> `IsActiveMember`: Gran protector contra el abandono, será esencial generar estrategias que mantengan al cliente en un estado activo.
+
+> `days_since_last_tx`: Factor de alto riesgo, a medida que pasan los días sin que el cliente realize transacciones, más aumentan las probabilidades relativas de abandono.
+
+> `Gender_Male`: El hecho de ser mujer (`Gender_Male = 0`) actúa como potenciador en las probabilidades relativas de Churn. Este es un punto crítico a investigar dado que puede haber sesgos de género en productos, ofertas y/o condiciones -> **IMPORTANTE REVISAR POLÍTICAS DE EMPRESA**.
+
+> `Geography_Germany`: Ser alemán aumenta las probabilidades relativas de abandono. Será necesario investigar las razones por las cuales los clientes de este país son más propensos a abandonar la empresa.
+
+> `days_since_last_ss`: Al igual que días desde la última transacción, mientras más días pasa un cliente sin conectarse a la aplicación de la empresa, más aumenta el riesgo de abandono.
+
+> `Balance`: CRÍTICO -> Tener un alto balance contribuye a las probabilidades relativas de abandono, esto refleja que los clientes que deciden dejar la empresa son de alto valor. Resulta de suma importancia investigar este fenómeno en profundidad.
 
 
 ## 6. Tecnologías utilizadas 🛠️
 
-* ``
+* `Jupyter Notebook`
 * `Git and GitHub`
-* ``
-* ``
-* ``
+* `Power BI`
+* `FastAPI`
 
 
 ## 7. Agradecimientos 🤝
 
-<br><br><br><br><br>
+Agradecer a No Country, la empresa encargada de la simulación laboral, quien presentó el contexto del proyecto y la plataforma para conectar a los integrantes y promover el trabajo colaborativo
+
+<img width="252" height="98" alt="image" src="https://github.com/user-attachments/assets/81f9b116-b58a-4a6f-a8e6-0df46bda5456" />
+
 
 
 ## 8. Desarrolladores del proyecto 👷
